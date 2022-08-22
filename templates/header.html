@@ -1,53 +1,71 @@
-<nav class="navbar navbar-expand-lg navbar-fixed-top bg-dark" role="banner">
-  <div class="container">
-    <a class="navbar-brand" style="color: #6c757d" href="#">Django Dersleri</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" style="color: white" aria-current="page" href="{% url 'home' %}">Anasayfa</a>
-        </li>
-          <li class="nav-item">
-              {% if request.user.is_authenticated %}
-                  <a class="nav-link active" style="color: white" href="{% url 'post:create' %}">Post Oluştur</a>
-              {% endif %}
-          </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link active" style="color: white" href="{% url 'post:index' %}" role="button"  aria-expanded="false">
-            Postlar
+<nav class="navbar navbar-expand-lg bg-dark" role="banner">
+    <div class="container">
+        <a class="navbar-brand" style="color: #6c757d" href="">Django Dersleri</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" style="color: white" aria-current="page"
+                       href="{% url 'home' %}">Anasayfa</a>
+                </li>
+                <li class="nav-item">
+                    {% if request.user.is_authenticated %}
+                        <a class="nav-link active" style="color: white" href="{% url 'post:create' %}">Post
+                            Oluştur</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active" style="color: white" href="{% url 'post:index' %}" role="button"
+                       aria-expanded="false">
+                        Postlar
 
-          </a>
-{#          <ul class="dropdown-menu">#}
-{#            <li><a class="dropdown-item" href="#">Action</a></li>#}
-{#            <li><a class="dropdown-item" href="#">Another action</a></li>#}
-{#            <li><hr class="dropdown-divider"></li>#}
-{#            <li><a class="dropdown-item" href="#">Something else here</a></li>#}
-{#          </ul>#}
-        </li>
-{#        <li class="nav-item">#}
-{#          <a class="nav-link disabled">Disabled</a>#}
-{#        </li>#}
-      </ul>
-        <ul class="nav navbar-nav navbar-expand-md">
-            <form class="d-flex" role="search" method="GET" action="">
-                {% csrf_token %}
-                <input class="form-control me-2 text-align: text-md-center" type="text" placeholder="Search on blog" aria-label="Search"/>
-                <button class="btn btn-light" style="color: #6c757d" type="submit">Ara</button>
-            </form>
-        </ul>
+                    </a>
+                    {#          <ul class="dropdown-menu">#}
+                    {#            <li><a class="dropdown-item" href="#">Action</a></li>#}
+                    {#            <li><a class="dropdown-item" href="#">Another action</a></li>#}
+                    {#            <li><hr class="dropdown-divider"></li>#}
+                    {#            <li><a class="dropdown-item" href="#">Something else here</a></li>#}
+                    {#          </ul>#}
+                </li>
+                {#        <li class="nav-item">#}
+                {#          <a class="nav-link disabled">Disabled</a>#}
+                {#        </li>#}
+            </ul>
+            <ul class="nav navbar-nav navbar-expand-md">
+                <form class="d-flex" role="search" method="GET" action="">
+                    {% csrf_token %}
+                    <input class="form-control me-2 text-align: text-md-center" type="text" name="q"
+                           placeholder="Search on blog" value="{{ request.GET.q }}" aria-label="Search"/>
+                    <button class="btn btn-light" style="color: #6c757d" type="submit">Ara</button>
+                </form>
+            </ul>
 
-        <ul class="nav navbar-nav navbar-right">
-            {% if request.user.is_authenticated %}
-                <li><a class="nav-link active" style="color: white" href="/admin/">Admin</a></li>
-                <li><a class="nav-link active" style="color: white" href="">Çıkış</a></li>
-                <a class="nav-link active" style="color: white" href="">Merhaba, {{ isim }}</a>
-            {% else %}
-            <a class="nav-link active" style="color: white" href="">Merhaba, Misafir</a>
-            {#                <li><a href="#">Hakkımda</a></li>#}
-            {#                <li><a href="#">İletişim</a></li>#}
-            {% endif %}
-        </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li><a class="nav-link active" style="color: white" href="/admin/">Admin</a></li>
+{#                  <li><a class="nav-link active" style="color: white" href="/admin/logout/">Çıkış</a></li>#}
+                    <li><a class="nav-link active" style="color: white" href="{% url 'accounts:logout' %}">Çıkış</a></li>
+                    <a class="nav-link active" style="color: white" href="">Merhaba, {% if request.user %}
+                        <span>{{ request.user.username }}</span> {% else %}<span>Misafir</span>{% endif %}</a>
+                {% else %}
+{#                  <li><a class="nav-link active" style="color: white" href="/admin/login/">Giriş Yap</a></li>#}
+                    <li><a class="nav-link active" style="color: white" href="{% url 'accounts:register' %}">Üye Ol </a></li>
+                    <li><a class="nav-link active" style="color: white" href="{% url 'accounts:login' %}"> Giriş</a></li>
+                    <a class="nav-link active" style="color: white" href="">Merhaba, Misafir</a>
+                    {#                <li><a href="#">Hakkımda</a></li>#}
+                    {#                <li><a href="#">İletişim</a></li>#}
+                {% endif %}
+
+                {% if not request.user.is_authenticated %}
+
+                {% else %}
+
+                {% endif %}
+
+            </ul>
+        </div>
     </div>
-  </div>
