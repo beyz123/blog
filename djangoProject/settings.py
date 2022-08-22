@@ -42,7 +42,11 @@ INSTALLED_APPS = [
 
     'crispy_forms',
 
-    'django_cleanup'
+    'django_cleanup',
+    
+    'ckeditor',
+
+   # 'captcha',
 ]
 
 MIDDLEWARE = [
@@ -126,7 +130,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -137,4 +141,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CKEDITOR_JQUERY_URL = os.path.join(STATIC_URL, 'js/jquery.min.js')
+CKEDITOR_CONFIGS = {
+    'default': {
+        # 'toolbar': 'full',
+        # 'height': 300,
+        'width': '100%',
+    },
+}
+# RECAPTCHA_PUBLIC_KEY = 'MyRecaptchaKey123'
+# RECAPTCHA_PRIVATE_KEY = 'MyRecaptchaPrivateKey456'
+
