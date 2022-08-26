@@ -28,6 +28,7 @@ def register_view(request):
         return redirect('home')
     return render(request, 'accounts/form.html', {'form': form, 'title': 'Üye Ol'})
 
+
 def logout_view(request):
     logout(request)
     return redirect('home')

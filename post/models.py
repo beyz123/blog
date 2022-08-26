@@ -12,6 +12,10 @@ class Post(models.Model):
     publishing_date = models.DateTimeField(verbose_name='yayınlanma_tarihi', auto_now_add=True)
     image = models.ImageField(null=True, blank=True)
     slug = models.SlugField(unique=True, editable=False, max_length=130)
+    likes = models.ManyToManyField('auth.User', blank=True, related_name='likes')
+
+    def total_likes_received(self):
+        return self.likes.count()
 
     def __str__(self):
         return self.title
@@ -41,7 +45,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self.get_unique_slug()
-            return super(Post, self).save(*args, **kwargs)
+        return super(Post, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['-publishing_date', 'id']
@@ -50,8 +54,6 @@ class Post(models.Model):
 class Comment(models.Model):
 
     post = models.ForeignKey('post.Post', related_name='comments', on_delete=models.CASCADE)
-
     name = models.CharField(max_length=200, verbose_name='İsim')
     content = models.TextField(verbose_name='Yorum')
-
     created_date = models.DateTimeField(auto_now_add=True)

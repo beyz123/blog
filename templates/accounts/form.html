@@ -4,18 +4,16 @@
 
 {% block body %}
 
-    <div class="container">
+    <div class="container"><br><br>
         <div class="row">
-            <div class="col-md-6 offset-md-3"></div>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <h1>{{ title }}</h1>
-                {{ form.as_p }}
-                <input class="btn btn-primary" type="submit" value={{ title }}>
-            </form>
+            <div class="col-md-6 offset-md-3">
+                <form method="POST" style="border: black" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h1>{{ title }}</h1>
+                    {{ form|crispy }}<br>
+                    <input class="btn btn-primary" style="background-color: black" type="submit" value={{ title }}>
+                </form>
+            </div>
         </div>
-
-
-
     </div>
 {% endblock %}

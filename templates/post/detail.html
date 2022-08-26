@@ -1,26 +1,87 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block body %}
     <div class="container">
         <div class="row">
-            < class="col-md-6 col-md-offset-3">
-                <div class="thumbnail">
-                    <img class="caption">
-                    {% if post.image %}
-                        <img src="{{ post.image.url }}" class="img.responsive">
-                    {% endif %}
-                    <h3>{{ post.title }} <small> {{ post.publishing_date }} </small></h3>
-                    <h4>Yazar: {{ post.user.get_full_name }}</h4>
-                    <p>{{ post.content|safe|linebreaks }}</p>
-                    <p><a href="{{ post.get_absolute_url }}" class="btn btn-primary" role="Button">İncele</a>
-                        {% if request.user.is_authenticated %}
-                            <a href="{{ post.get_update_url }}" class="btn btn-default" role="Button">Güncelle</a>
-                            <a href="{{ post.get_delete_url }}" class="btn btn-danger" role="Button">Sil</a>
-                        {% endif %}
-                    </p>
+                <div class="col-md-6 col-md-offset-3"></div>
+            <div class="thumbnail">
+                <img class="caption">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="img.responsive">
+                {% endif %}
+                <h3>{{ post.title }} <small> {{ post.publishing_date }} </small></h3>
+                <h4>Yazar: {{ post.user.get_full_name }}</h4>
+                <p>{{ post.content|safe|linebreaks }}</p>
+                {#<p><a href="{{ post.get_absolute_url }}" class="btn btn-primary" role="Button">İncele</a>#}
+                {% if request.user == post.user %}
+                    <a href="{{ post.get_update_url }}" class="btn btn-secondary"
+                       style="border-bottom-color: #41464b; border-right-color: #41464b; border-left-color: #41464b; border-top-color: #41464b"
+                       role="Button">Güncelle</a>
+                    {#<button type="submit" class="btn btn-default btn-sm" onclick="return confirm('Silmek istediğinize emin misiniz ?')">#}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Sil
+                    </button>
+                {% endif %}
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Onay Mesajı</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Silmek istediğinize emin misiniz ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                <button type="button" class="btn btn-primary" onclick="post_delete('{{ post.slug }}')">
+                                    Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                {% if user.is_authenticated and request.user != post.user %}
+                    <button type="button" name="post_id" id="likebutton" onclick="like('{{ post.id }}')" class="btn btn-info"
+                            data-bs-toggle="modal" data-bs-target="#staticBackdrop">Like
+                    </button>
+                {% endif %}
+{#                <!-- Small modal -->#}
+{#                <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog"#}
+{#                     aria-labelledby="myLargeModalLabel" aria-hidden="true">#}
+{#                    <div class="modal-dialog modal-sm">#}
+{#                        <div class="modal-content">#}
+{#                            <p id="message"></p>#}
+{#                        </div>#}
+{#                    </div>#}
+                {#                </div>#}
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Başarılı</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="message"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <strong class="text-secondary">{{ post.total_likes_received }} Like{{ post.total_likes_received|pluralize }}</strong>
 
-                <br><br><hr>
+
+                <br><br>
+                <hr>
                 <h3>Yorum Ekle:</h3>
                 {% include 'post/comment.html' %}
                 <hr>
@@ -28,7 +89,7 @@
                 {% for comment in post.comments.all %}
 
                     <h4>{{ comment.name }} | <small>{{ comment.created_date | timesince }} önce</small></h4>
-                    <p>{{ comment.content | linebreaks}}</p>
+                    <p>{{ comment.content | linebreaks }}</p>
                     <hr>
 
                 {% endfor %}
@@ -36,5 +97,42 @@
             </div>
         </div>
     </div>
-    </div>
+
+    <script>
+
+        function post_delete(slug) {
+            $.ajax('/post/' + slug + '/delete/', {}).then(function (response) {
+                window.location.href = '/'
+            }).catch(function (error) {
+                console.log(error)
+            })
+        }
+
+    </script>
+
+    <script>
+        function like(post_id) {
+            $.ajax({
+                type: 'POST',
+                url: '/post/post_like/',
+                data: {post_id: post_id},
+                dataType: 'json',
+                success: (response) => {
+                    let element = document.getElementById("message");
+                    let element2 = document.getElementById("likebutton")
+                    element.innerText = response.detail
+                    if (element2.innerText == "Like") {
+                        element2.innerText = "Unlike"
+                    }
+                    else {
+                        element2.innerText = "Like"
+                    }
+                    console.log('success', response);
+                    {#element = response.detail;#}
+                    {#alert(response.detail);#}
+                }
+            })
+        }
+    </script>
+
 {% endblock %}
